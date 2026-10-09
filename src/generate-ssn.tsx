@@ -1,32 +1,26 @@
-import { ActionPanel, Action, Icon, List } from "@raycast/api";
+import { Action, Icon, Keyboard } from "@raycast/api";
+import { compactAhv, formatAhv, randomAhv } from "./lib/ahv";
+import { HISTORY_KEYS } from "./lib/history";
+import { ValueList } from "./lib/value-list";
 
-const ITEMS = Array.from(Array(3).keys()).map((key) => {
-  return {
-    id: key,
-    icon: Icon.Bird,
-    title: "Title " + key,
-    subtitle: "Subtitle",
-    accessory: "Accessory",
-  };
-});
+function generate() {
+  return formatAhv(randomAhv());
+}
 
 export default function Command() {
   return (
-    <List>
-      {ITEMS.map((item) => (
-        <List.Item
-          key={item.id}
-          icon={item.icon}
-          title={item.title}
-          subtitle={item.subtitle}
-          accessories={[{ icon: Icon.Text, text: item.accessory }]}
-          actions={
-            <ActionPanel>
-              <Action.CopyToClipboard content={item.title} />
-            </ActionPanel>
-          }
+    <ValueList
+      generate={generate}
+      historyKey={HISTORY_KEYS.ssn}
+      noun="SSN"
+      icon={Icon.Person}
+      extraActions={(value) => (
+        <Action.CopyToClipboard
+          title="Copy Without Dots"
+          content={compactAhv(value)}
+          shortcut={Keyboard.Shortcut.Common.Copy}
         />
-      ))}
-    </List>
+      )}
+    />
   );
 }
